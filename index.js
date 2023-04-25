@@ -1,5 +1,6 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
+require("dotenv").config();
 
 const port = process.env.PORT || 3000;
 
@@ -23,7 +24,19 @@ app.get("/_health", (req, res) => {
 app.post("/api/pdf", async (req, res) => {
   const { printUrl } = req.body;
 
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    args: [
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+      "--disable-setuid-sandbox",
+    ],
+    headless: true,
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
   const page = await browser.newPage();
   await page.goto(printUrl, { waitUntil: "networkidle0" });
   const pdfBuffer = await page.pdf({ format: "A4", landscape: true });
