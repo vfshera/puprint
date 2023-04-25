@@ -7,6 +7,15 @@ const app = express();
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (req.hostname === "localhost") {
+    return res.send("BAD URL");
+  }
+  next();
+});
+
 app.post("/api/pdf", async (req, res) => {
   const { printUrl } = req.body;
 
@@ -24,5 +33,29 @@ app.post("/api/pdf", async (req, res) => {
 });
 
 app.all("*", (req, res) => res.send(""));
+
+process.on("uncaughtException", (error, origin) => {
+  console.log("----- Uncaught exception -----");
+  console.log(error);
+  console.log("----- Exception origin -----");
+  console.log(origin);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.log("----- Unhandled Rejection at -----");
+  console.log(promise);
+  console.log("----- Reason -----");
+  console.log(reason);
+});
+
+process.on("SIGTERM", (signal) => {
+  console.log(`Process ${process.pid} received a SIGTERM signal`);
+  process.exit(0);
+});
+
+process.on("SIGINT", (signal) => {
+  console.log(`Process ${process.pid} has been interrupted`);
+  process.exit(0);
+});
 
 app.listen(port);
