@@ -11,9 +11,13 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (req.hostname === "localhost") {
-    return res.send("BAD URL");
+    return res.status(400).send("BAD URL");
   }
   next();
+});
+
+app.get("/_health", (req, res) => {
+  res.status(200).send("ok");
 });
 
 app.post("/api/pdf", async (req, res) => {
