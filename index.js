@@ -12,7 +12,7 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (req.hostname === "localhost") {
-    return res.status(400).send("BAD URL");
+    return res.status(418).send("☕☕☕");
   }
   next();
 });
@@ -49,7 +49,7 @@ app.post("/api/pdf", async (req, res) => {
   res.status(200).send(pdfBuffer);
 });
 
-app.all("*", (req, res) => res.send(""));
+app.all("*", (req, res) => res.status(418).send("☕☕☕"));
 
 process.on("uncaughtException", (error, origin) => {
   console.log("----- Uncaught exception -----");
